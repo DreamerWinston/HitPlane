@@ -23,6 +23,9 @@ function initConfig(){
 
     // 飞机ID数组
     arrayID =new Array();
+
+    // 是否暂停
+    isPause =false;
     
 }
 
@@ -66,10 +69,40 @@ function initBullet(){
 
 function initMenu(){
     //初始化菜单
+    var pause =document.createElement('div');
+
+    pause.id ='pause_button';
+
+    pause.style.top ='20px';
+    pause.style.left =750-65+'px';
+    screen.appendChild(pause);
+
+    pause.onclick =function(){
+
+        isPause =!isPause;
+
+        pause.style.backgroundImage =isPause? "url('images/game_resume_nor.png')": "url('images/game_pause_nor.png')";
+
+        isPause?clearTimer():setTimer();
+    }
 }
 
 function initBackGround(){
+    backGround1 =document.createElement('div');
 
+    backGround1.className='background';
+    backGround1.style.top='0px';
+    backGround1.style.left='0px';
+
+
+    screen.appendChild(backGround1);
+
+    backGround2 =document.createElement('div');
+
+    backGround2.className='background';
+    backGround2.style.top=-document.documentElement.clientHeight;
+    backGround2.style.left='0px';
+    screen.appendChild(backGround2);
 }
 
 function createAll(){
@@ -77,18 +110,24 @@ function createAll(){
 }
 
 function createPlane(){
-    var plane =document.createElement('div');
-
-    plane.id ='plane';
-    plane.className='plane';
+     minePlane={};
+    var planeDiv =document.createElement('div');
+    minePlane.div =planeDiv;
+    minePlane.div.id ='plane';
+    minePlane.className='plane';
 
     // plane.style.left ='200px';
     // plane.style.top ='200px';
-    plane.style.left=(750-90)/2+'px';
-    plane.style.top =800-95 +'px';
+    minePlane.div.style.left=(750-90)/2+'px';
+    minePlane.div.style.top =800-95 +'px';
 
-    screen.appendChild(plane);
-    var drag = document.getElementById('plane');
+    minePlane.pics =['images/plane1.png','images/plane2.png'];
+    
+
+    
+
+    screen.appendChild(minePlane.div);
+    var drag = planeDiv;
 
                 //点击某物体时，用drag对象即可，move和up是全局区域，也就是整个文档通用，应该使用document对象而不是drag对象(否则，采用drag对象时物体只能往右方或下方移动)
                 drag.onmousedown = function(e) {
@@ -137,7 +176,7 @@ function createPlane(){
                     };
                 };
 
-    
+                myplane();
 }
 
 // 添加敌人
@@ -164,7 +203,8 @@ function EnemyPlane(name,type){
 
 
     this.id ='enemy'+eclassName+name;
-
+    this.num =name;
+    this.modelType =type;
     var bool =vaildateID(this.id);
     if(!bool)return -1;
     // 如果敌机已存在 则返回-1;
@@ -203,30 +243,38 @@ function EnemyPlane(name,type){
         var top =Math.floor(Math.random()*(document.documentElement.clientHeight+100));
         this.div.style.top ='-'+ top+'px' ;
         this.type=1;
+        this.changeType(this.modelType);
+        
     }
 
     this.changeType =function(type){
         var localType =['enemy','enemy_m','enemy_boss'];
         var eclassName=localType[type];
         this.div.className =eclassName;
+        this.modelType =type;
         
         switch (type) {
             case 0:
               {
                 this.div.style.width='45px';
                 this.div.style.height='30px';
+                this.div.style.backgroundImage = "url('images/diji.png')";
               }  
                 break;
                 case 1:
                 {
                     this.div.style.width='85px';
                 this.div.style.height='98px';
+                this.div.style.backgroundImage = "url('images/enemy1.png')";
+
                 }
                 break;
                 case 2:
                 {
                     this.div.style.width='120px';
                 this.div.style.height='200px';
+                this.div.style.backgroundImage = "url('images/enemy2_n1.png')";
+
                 }
                 break;
         
@@ -240,6 +288,30 @@ function EnemyPlane(name,type){
         
         this.type =0;
         this.reset();
+    }
+
+    this.pics =function (){
+
+        switch (this.modelType) {
+            case 0:
+                {
+                    return ['images/bz1.png','images/bz2.png','images/bz3.png','images/bz4.png','images/bz5.png']
+                }
+                break;
+                case 1:
+                {
+                    return ['images/enemy1_down1.png','images/enemy1_down2.png','images/enemy1_down3.png','images/enemy1_down4.png']
+                }
+                break;
+                case 2:
+                {
+                    return ['images/enemy2_down1.png','images/enemy2_down2.png','images/enemy2_down3.png','images/enemy2_down4.png','images/enemy2_down5.png','images/enemy2_down6.png']
+                }
+                break;
+        
+            default:
+                break;
+        }
     }
 
    
@@ -269,6 +341,9 @@ function MyBullet(id,type,div){
     this.reset =function(){
         // screen.removeChild(this.div);
         this.type=0;
+        this.div.style.left ='-50px';
+        this.div.style.top ='-50px';
+
     }
 }
 
@@ -283,7 +358,7 @@ function setBullet(){
     var planeY =  plane.style.top;
 
     bullet.div.style.left =parseInt(planeX)+35+'px';
-    bullet.div.style.top =parseInt(planeY)-50+'px';
+    bullet.div.style.top =parseInt(planeY)-30+'px';
     bullet.type=1;
     screen.appendChild(bullet.div);
     break;
@@ -302,7 +377,6 @@ function upBullet(){
             var topY = parseFloat(bullet.div.style.top);
                     topY-=1.5;
                     bullet.div.style.top =topY + 'px';
-                    console.log(21313);
         }
        
     }
@@ -371,17 +445,18 @@ function judgeBullet(){
     for (const key in arrayEnemy) {
         if (arrayEnemy.hasOwnProperty(key)) {
             const enemyP = arrayEnemy[key];
-
+            if(enemyP.type!=1)continue;
             
             for (const key2 in arrayBullet) {
                 if (arrayBullet.hasOwnProperty(key2)) {
                     const bullet = arrayBullet[key2];
                     
-
-                    if(frameContect(enemyP.div,bullet.div)){
+                    if(bullet.type!=1)continue;
+                    if(frameContect(enemyP.div,bullet.div)||frameContect(bullet.div,enemyP.div)){
                         enemyP.type=2;
-                        enemyP.reset();
+                        // enemyP.reset();
                         bullet.reset();
+                        frameAnimation(enemyP,enemyP.pics());
                     }
 
 
@@ -399,7 +474,7 @@ function judgeBullet(){
 
 //设置飞机
 
-function setPlane(){
+function setEnemyPlane(){
     for (let index = 0; index < arrayEnemy.length; index++) {
         // const enemy = arrayEnemy[index];
 
@@ -408,6 +483,8 @@ function setPlane(){
             break;
         }
         var enemy =arrayEnemy[index];
+
+        if(enemy.type==1)continue;
 
         if (currentPlaneCount%12 ==0){
             setEnemy_m();   
@@ -434,6 +511,32 @@ function setPlane(){
 }
 
 
+function frameAnimation(enemyL,pics){
+
+    var index=0;
+
+    
+
+    function run(){
+        var url =pics[index];
+        if(index >= pics.length){
+            enemyL.reset();
+            return;
+        }
+
+        enemyL.div.style.backgroundImage = 'url(' + url + ')';
+        enemyL.div.style.backgroundRepeat = 'no-repeat'; 
+
+        index++;
+        oTimer =setTimeout(run,160);        
+    }
+
+    run();
+
+}
+
+
+
 // 敌机下落
 
 function enemyDown(){
@@ -445,10 +548,29 @@ function enemyDown(){
         var enemy =arrayEnemy[index];
         if(enemy.type!=1){continue;}
         var topY = parseFloat(enemy.div.style.top);
-        topY+=0.3;
+        
+        switch (enemy.modelType) {
+            case 0:
+                {
+                    topY+=1+enemy.num*0.1;
+                }
+                break;
+                case 1:
+                {
+                    topY+=4;
+                }
+                break;
+                case 2:
+                {
+                    topY+=6;   
+                }
+                break;
+        
+            default:
+                break;
+        }
+
         enemy.div.style.top =topY + 'px';
-
-
 
     }
 }
@@ -477,7 +599,23 @@ function judgePlane(){
 
 // 背景移动
 
-function initBackGround(){
+function moveBackGround(){
+
+    var topY = parseFloat(backGround1.style.top);
+        topY+=0.9;
+        backGround1.style.top =topY + 'px';
+
+        if(parseInt(backGround1.style.top)>document.documentElement.clientHeight){
+            backGround1.style.top=-document.documentElement.clientHeight;
+        }
+
+        var topY = parseFloat(backGround2.style.top);
+        topY+=0.9;
+        backGround2.style.top =topY + 'px';
+
+        if(parseInt(backGround2.style.top)>document.documentElement.clientHeight){
+            backGround2.style.top=-document.documentElement.clientHeight;
+        }
 
 }
 
@@ -489,6 +627,8 @@ function initGame(){
     // 得分,数据初始化
 
     initBackGround();
+
+    initMenu();
 
     initEnemy();
 
@@ -505,17 +645,49 @@ function initGame(){
 
 function setTimer(){
 
-    setInterval(setPlane ,1000);
+    var timerSetEnemy =setInterval(setEnemyPlane,1000);
 
-    setInterval(enemyDown,1);   
+  var timerEnemy = setInterval(enemyDown,20);   
 
-    setInterval(judgePlane,1);
+  var timerReciveEnemy = setInterval(judgePlane,10);
 
-    setInterval(setBullet ,350);
+  var timerBullet = setInterval(setBullet ,350);
 
-    setInterval(upBullet,1);
+  var timerUpBullet = setInterval(upBullet,1);
 
-    setInterval(judgeBullet,1);
+  var timerJudgeBullet = setInterval(judgeBullet,0.1);
+
+   var timerBack = setInterval(moveBackGround,1);
+
+
+
+    timerArray =[timerEnemy,timerReciveEnemy,timerJudgeBullet,timerUpBullet,timerBack];
+
+}
+
+function myplane(){
+
+     var index =0;
+    function run(){
+        index =index==1?0:1;
+        console.log(index);
+        var url =minePlane.pics[index];
+       
+        minePlane.div.style.backgroundImage = 'url(' + url + ')';
+        minePlane.div.style.backgroundRepeat = 'no-repeat'; 
+
+        oTimer =setTimeout(run,160);     
+        
+    }
+
+    run();
+}
+
+function clearTimer(){
+    for (let index = 0; index < timerArray.length; index++) {
+        const element = timerArray[index];
+        clearInterval(element);
+    }
 }
 
 

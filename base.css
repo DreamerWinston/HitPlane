@@ -9,6 +9,7 @@
 
     background-image: url('images/bgPlan.png');
     border: 0ex solid black;
+    overflow: hidden;
 }
 
 
@@ -59,8 +60,26 @@
     position: absolute;
 }
 
+.background{
+    position: absolute;
+    width: 750px;
+    height: 100%;
+    top: 0;
+    left: 20%;
+
+    background-image: url('images/bgPlan.png');
+    border: 0ex solid black;
+}
 
 /* 默认CSS */
+
+#pause_button{
+    position: absolute;
+    width: 45px;
+    height: 45px;
+    background-repeat: no-repeat;
+    background-image: url('images/game_pause_nor.png');
+}
 
 
 
