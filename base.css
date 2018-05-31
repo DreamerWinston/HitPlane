@@ -1,0 +1,99 @@
+
+/* 游戏幕布 */
+#screen {
+    position: absolute;
+    width: 750px;
+    height: 100%;
+    top: 0;
+    left: 20%;
+
+    background-image: url('images/bgPlan.png');
+    border: 0ex solid black;
+}
+
+
+/* 敌机 */
+.enemy {
+    width: 45px;
+    height: 30px;
+    background-image: url('images/diji.png');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    position: absolute;
+}
+
+
+.enemy_m {
+    width: 45px;
+    height: 30px;
+    background-image: url('images/enemy1.png');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    position: absolute;
+}
+
+.enemy_boss {
+    width: 45px;
+    height: 30px;
+    background-image: url('images/enemy2_n1.png');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    position: absolute;
+}
+
+#plane {
+    width: 90px;
+    height: 90px;
+    background-image: url('images/plane1.png');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    position: absolute;
+}
+
+.plane_bullet {
+    width: 14px;
+    height: 28px;
+    background-image: url('images/zidan.png');
+    background-size: 90%;
+    background-repeat: no-repeat;
+    position: absolute;
+}
+
+
+/* 默认CSS */
+
+
+
+body{
+    line-height:1.4;
+    color:#333;
+    font-family:arial;
+    font-size: 12px;
+    background:gray;
+
+
+    margin: 0 auto;
+    background-size: cover;
+
+}
+
+input,textarea,select{
+    font-size:12px;
+    font-size:100%;    
+    font-family:arial;
+    font-family:inherit;
+}
+body,h1,h2,h3,h4,h5,h6,p,ul,ol,form{
+    margin:0;
+}
+h4,h5,h6{
+    font-size:1em;
+}
+ul,ol{
+    padding-left:0; 
+    list-style-type:none;
+}
+/*image with no-border*/
+a img{border:0;}
+img{border:0;}
+
